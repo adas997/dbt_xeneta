@@ -1,0 +1,85 @@
+version: 2
+
+models:
+
+  - name: stg_regions
+    description: '{{ doc("desc_stg_region") }}'
+    columns:
+      - name: region_id
+        description: "Slug or Region ID : A machine-readable form of the region name"
+        tests:
+          - unique 
+
+  - name: stg_ports
+    description: '{{ doc("desc_stg_ports") }}'
+    columns:
+      - name: port_id
+        description: "An integer ID for the port"
+        tests:
+          - unique
+
+      - name: port_code
+        description: "5-character port code" 
+        tests:
+          - unique
+
+      - name: region_id
+        description: "Slug/Region_id - identifies which region the port belongs to"
+        tests:
+          - relationships:
+              to: ref ('stg_regions')
+              field: region_id  
+
+  - name: stg_price_usd
+    description: "This is an aggregated table in staging which holds the aggregated price in USD after curreny conversion- Data will then be pushed to Fact table in the Mart" 
+    columns:
+      - name: valid_from
+        description: "Valid start date when the cargo will be shipped for this contract's price"
+        tests:
+         - validity_from_less_than
+      - name: valid_to
+        description: "Valid end date till when the cargo will be valid for this contract's price"
+        tests:
+         - validity_to_greater_than
+      - name: origin_pid
+        description: "Container's origin port id"
+        tests:
+          - relationships:
+              to: ref ('stg_ports')
+              field: port_id
+      - name: destination_pid
+        description: "Container's destination port id"
+        tests:
+          - relationships:
+              to: ref ('stg_ports')
+              field: port_id
+      - name: price_in_usd
+        description:  "price value displayed in USD by dividing the charges by exchange rate" 
+
+
+  - name: stg_rates
+    description: '{{ doc("desc_stg_rates") }}'
+
+  - name: fct_aggregated_price
+    description: '{{ doc("desc_final_fct") }}'
+    columns:
+      
+
+      - name: port_id
+        tests:
+          - relationships:
+              to: ref ('stg_ports')
+              field: port_id
+
+      - name: region_id
+        description: "Slug/Region_id - identifies which region the port belongs to"
+        tests:
+          - relationships:
+              to: ref ('stg_regions')
+              field: region_id        
+       
+
+                                 
+
+
+         

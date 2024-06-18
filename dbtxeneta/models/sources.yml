@@ -1,0 +1,14 @@
+version: 2
+
+sources:
+  - name: dbtxeneta
+    schema: raw
+    tables: 
+      - name: ports
+        identifier: raw_ports
+
+      - name: rates
+        identifier: raw_exchange_rates
+
+      - name: regions
+        identifier: raw_regions
